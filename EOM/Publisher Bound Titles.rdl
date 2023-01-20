@@ -17,56 +17,90 @@
     <DataSet Name="BTSB_Dataset_EZPLEPUB">
       <Query>
         <DataSourceName>BTSB</DataSourceName>
-        <QueryParameters>
-          <QueryParameter Name="@Tmaster">
-            <Value>=Parameters!Tmaster.Value</Value>
-          </QueryParameter>
-        </QueryParameters>
-        <CommandText>IF @Tmaster = 'TMaster'
-WITH T1 as
-(
-	SELECT tm.TitleNo, tm.Title, tm.Author, tm.Pub, p.MainPub, tm.PLE, tm.Pub_Bind, On_Hand, 
-       CASE WHEN tm.PLE = 'Y' THEN 'Library'
-              WHEN tm.pub_bind = 'Y' THEN 'Trade'
-              WHEN tm.pub_bind = 'P' THEN 'Paperback'
-              ELSE 'Indeterminate' END AS SourceEdition,
-              pd.[Type], pd.[Percent], Quantity, (select top 1 Quantity from Production.dbo.LotMaster where SKU = tm.titleno order by TimeIn desc) as 'LotQuantity',calc_list, 
-			  case when (select top 1 Quantity from Production.dbo.LotMaster where SKU = tm.titleno order by TimeIn desc) = Quantity then [Percent]
-				when (select top 1 Quantity from Production.dbo.LotMaster where SKU = tm.titleno order by TimeIn desc) &gt; Quantity then [Percent] else '50' end as 'NewDiscount',
-			  ROW_NUMBER() OVER(Partition by tm.titleno, tm.title order by Quantity desc) as RowNum
-	FROM TMaster tm 
-	inner join Publisher p on tm.pub = p.Pub
-	LEFT JOIN PublisherDiscount pd ON tm.pub = pd.pub AND pd.[Type] = (CASE WHEN tm.PLE = 'Y' THEN 'library'
-				  WHEN tm.pub_bind = 'Y' THEN 'trade'
-				  WHEN tm.pub_bind = 'P' THEN 'paper'
-				  ELSE 'Indeterminate' END)
-	WHERE tm.active = 'T' AND tm.PLE = 'Y' OR tm.pub_bind NOT IN (' ','B') AND CAST(tm.on_hand AS int) &gt; 0 
-)
-select *
-from T1 where RowNum &lt;&gt; 2
+        <CommandText>DECLARE @Tmaster varchar(25)
+SET @Tmaster = 'TMaster'
+
+IF @Tmaster = 'TMaster'
+	WITH T1 AS
+	(
+		SELECT
+			tm.TitleNo, tm.Title, tm.Author, tm.Pub, p.MainPub, tm.PLE, tm.Pub_Bind,
+			CONVERT(int, On_Hand) AS On_Hand,
+			CASE
+				WHEN tm.season_code = 'Y' THEN 'Large Print HC'
+				WHEN tm.season_code = 'I' THEN 'Large Print PB'
+				WHEN tm.PLE = 'Y' THEN 'Library'
+				WHEN tm.pub_bind = 'Y' THEN 'Trade'
+				WHEN tm.pub_bind = 'P' THEN 'Paperback'
+				ELSE 'Indeterminate'
+			END AS SourceEdition,
+			tm.season_code AS SeasonCode,
+			ISNULL(pd.[Type], '') AS [Type],
+			ISNULL(pd.[Percent], '') AS [Percent],
+			ISNULL(Quantity, 0) AS Quantity,
+			(SELECT TOP 1 Quantity FROM Production.dbo.LotMaster WHERE SKU = tm.titleno ORDER BY TimeIn DESC) AS 'LotQuantity',
+			calc_list, 
+			CASE
+				WHEN (select top 1 Quantity from Production.dbo.LotMaster where SKU = tm.titleno order by TimeIn desc) = Quantity THEN [Percent]
+				WHEN (select top 1 Quantity from Production.dbo.LotMaster where SKU = tm.titleno order by TimeIn desc) &gt; Quantity THEN [Percent]
+				ELSE '50'
+			END AS 'NewDiscount',
+			ROW_NUMBER() OVER(Partition by tm.titleno, tm.title ORDER BY Quantity DESC) AS RowNum
+		FROM TMaster tm 
+		INNER JOIN Publisher p ON tm.pub = p.Pub
+		LEFT JOIN PublisherDiscount pd ON tm.pub = pd.pub
+		AND pd.[Type] = (CASE WHEN tm.PLE = 'Y' THEN 'library'
+					  WHEN tm.pub_bind = 'Y' THEN 'trade'
+					  WHEN tm.pub_bind = 'P' THEN 'paper'
+					  ELSE 'Indeterminate' END)
+		WHERE tm.active = 'T'
+		AND (tm.PLE = 'Y' OR tm.pub_bind NOT IN (' ','B'))
+		AND CAST(tm.on_hand AS int) &gt; 0
+	)
+	SELECT *
+	FROM T1
+	WHERE RowNum &lt;&gt; 2
 ELSE
-IF @Tmaster = 'EOM TMaster'
-WITH T1 as
-(
-	SELECT tm.TitleNo, tm.Title, tm.Author, tm.Pub, p.MainPub, tm.PLE, tm.Pub_Bind, On_Hand, 
-       CASE WHEN tm.PLE = 'Y' THEN 'Library'
-              WHEN tm.pub_bind = 'Y' THEN 'Trade'
-              WHEN tm.pub_bind = 'P' THEN 'Paperback'
-              ELSE 'Indeterminate' END AS SourceEdition,
-              pd.[Type], pd.[Percent], Quantity, (select top 1 Quantity from Production.dbo.LotMaster where SKU = tm.titleno order by TimeIn desc) as 'LotQuantity',calc_list, 
-			  case when (select top 1 Quantity from Production.dbo.LotMaster where SKU = tm.titleno order by TimeIn desc) = Quantity then [Percent]
-				when (select top 1 Quantity from Production.dbo.LotMaster where SKU = tm.titleno order by TimeIn desc) &gt; Quantity then [Percent] else '50' end as 'NewDiscount',
-			  ROW_NUMBER() OVER(Partition by tm.titleno, tm.title order by Quantity desc) as RowNum
-	FROM BTSB_Statistics.dbo.TMASTER_EOM tm 
-	inner join Publisher p on tm.pub = p.Pub
-	LEFT JOIN PublisherDiscount pd ON tm.pub = pd.pub AND pd.[Type] = (CASE WHEN tm.PLE = 'Y' THEN 'library'
-				  WHEN tm.pub_bind = 'Y' THEN 'trade'
-				  WHEN tm.pub_bind = 'P' THEN 'paper'
-				  ELSE 'Indeterminate' END)
-	WHERE tm.active = 'T' AND tm.PLE = 'Y' OR tm.pub_bind NOT IN (' ','B') AND CAST(tm.on_hand AS int) &gt; 0 
-)
-select *
-from T1 where RowNum &lt;&gt; 2</CommandText>
+	IF @Tmaster = 'EOM TMaster'
+	WITH T1 as
+	(
+		SELECT
+			tm.TitleNo, tm.Title, tm.Author, tm.Pub, p.MainPub, tm.PLE, tm.Pub_Bind,
+			CONVERT(int, On_Hand) AS On_Hand, 
+			CASE
+				WHEN tm.season_code = 'Y' THEN 'Large Print HC'
+				WHEN tm.season_code = 'I' THEN 'Large Print PB'
+				WHEN tm.PLE = 'Y' THEN 'Library'
+				WHEN tm.pub_bind = 'Y' THEN 'Trade'
+				WHEN tm.pub_bind = 'P' THEN 'Paperback'
+				ELSE 'Indeterminate'
+			END AS SourceEdition,
+			tm.season_code AS SeasonCode,
+			ISNULL(pd.[Type], '') AS [Type],
+			ISNULL(pd.[Percent], '') AS [Percent],
+			ISNULL(Quantity, 0) AS Quantity,
+			(SELECT TOP 1 Quantity FROM Production.dbo.LotMaster WHERE SKU = tm.titleno ORDER BY TimeIn DESC) AS 'LotQuantity',
+			calc_list, 
+			CASE
+				WHEN (select top 1 Quantity from Production.dbo.LotMaster where SKU = tm.titleno order by TimeIn desc) = Quantity THEN [Percent]
+				WHEN (select top 1 Quantity from Production.dbo.LotMaster where SKU = tm.titleno order by TimeIn desc) &gt; Quantity THEN [Percent]
+				ELSE '50'
+			END AS 'NewDiscount',
+			ROW_NUMBER() OVER(Partition by tm.titleno, tm.title ORDER BY Quantity DESC) AS RowNum
+		FROM BTSB_Statistics.dbo.TMASTER_EOM AS tm 
+		INNER JOIN Publisher p ON tm.pub = p.Pub
+		LEFT JOIN PublisherDiscount pd ON tm.pub = pd.pub
+		AND pd.[Type] = (CASE WHEN tm.PLE = 'Y' THEN 'library'
+					  WHEN tm.pub_bind = 'Y' THEN 'trade'
+					  WHEN tm.pub_bind = 'P' THEN 'paper'
+					  ELSE 'Indeterminate' END)
+		WHERE tm.active = 'T'
+		AND (tm.PLE = 'Y' OR tm.pub_bind NOT IN (' ','B'))
+		AND CAST(tm.on_hand AS int) &gt; 0
+	)
+	SELECT *
+	FROM T1
+	WHERE RowNum &lt;&gt; 2</CommandText>
         <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
       </Query>
       <Fields>
@@ -100,10 +134,14 @@ from T1 where RowNum &lt;&gt; 2</CommandText>
         </Field>
         <Field Name="On_Hand">
           <DataField>On_Hand</DataField>
-          <rd:TypeName>System.String</rd:TypeName>
+          <rd:TypeName>System.Int32</rd:TypeName>
         </Field>
         <Field Name="SourceEdition">
           <DataField>SourceEdition</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="SeasonCode">
+          <DataField>SeasonCode</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
         <Field Name="Type">
@@ -168,7 +206,7 @@ from T1 where RowNum &lt;&gt; 2</CommandText>
               </TablixColumns>
               <TablixRows>
                 <TablixRow>
-                  <Height>0.15in</Height>
+                  <Height>0.23333in</Height>
                   <TablixCells>
                     <TablixCell>
                       <CellContents>
@@ -418,7 +456,7 @@ from T1 where RowNum &lt;&gt; 2</CommandText>
                   </TablixCells>
                 </TablixRow>
                 <TablixRow>
-                  <Height>0.12in</Height>
+                  <Height>0.245in</Height>
                   <TablixCells>
                     <TablixCell>
                       <CellContents>
@@ -1334,7 +1372,7 @@ from T1 where RowNum &lt;&gt; 2</CommandText>
             <DataSetName>BTSB_Dataset_EZPLEPUB</DataSetName>
             <Top>0.04167in</Top>
             <Left>0.11333in</Left>
-            <Height>0.72in</Height>
+            <Height>0.92833in</Height>
             <Width>10.26875in</Width>
             <Style>
               <Border>
@@ -1343,10 +1381,10 @@ from T1 where RowNum &lt;&gt; 2</CommandText>
             </Style>
           </Tablix>
         </ReportItems>
-        <Height>0.78944in</Height>
+        <Height>0.97in</Height>
         <Style />
       </Body>
-      <Width>11in</Width>
+      <Width>10.4375in</Width>
       <Page>
         <PageHeader>
           <Height>0.55208in</Height>
@@ -1374,7 +1412,7 @@ from T1 where RowNum &lt;&gt; 2</CommandText>
               </Paragraphs>
               <rd:DefaultName>Textbox21</rd:DefaultName>
               <Top>0.20709in</Top>
-              <Left>0.29041in</Left>
+              <Left>0.11333in</Left>
               <Height>0.25in</Height>
               <Width>1in</Width>
               <Style>
@@ -1402,14 +1440,16 @@ from T1 where RowNum &lt;&gt; 2</CommandText>
                       </Style>
                     </TextRun>
                   </TextRuns>
-                  <Style />
+                  <Style>
+                    <TextAlign>Center</TextAlign>
+                  </Style>
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>Textbox22</rd:DefaultName>
               <Top>0.20709in</Top>
-              <Left>3.93625in</Left>
+              <Left>1.33208in</Left>
               <Height>0.25in</Height>
-              <Width>3.27083in</Width>
+              <Width>7.77917in</Width>
               <ZIndex>1</ZIndex>
               <Style>
                 <Border>
@@ -1440,22 +1480,22 @@ from T1 where RowNum &lt;&gt; 2</CommandText>
                 <Paragraph>
                   <TextRuns>
                     <TextRun>
-                      <Value>=Globals!PageNumber</Value>
+                      <Value>="Page " &amp; Globals!PageNumber &amp; " of " &amp; Globals!TotalPages</Value>
                       <Style>
                         <FontFamily>arial</FontFamily>
                       </Style>
                     </TextRun>
                   </TextRuns>
                   <Style>
-                    <TextAlign>Right</TextAlign>
+                    <TextAlign>Center</TextAlign>
                   </Style>
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>Textbox23</rd:DefaultName>
               <Top>0.06944in</Top>
-              <Left>9.26958in</Left>
+              <Left>0.11333in</Left>
               <Height>0.25in</Height>
-              <Width>1in</Width>
+              <Width>10.26875in</Width>
               <Style>
                 <Border>
                   <Style>None</Style>

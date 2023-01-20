@@ -78,6 +78,7 @@
     <Report Include="Titles for Season grouped by Publisher.rdl" />
     <Report Include="Titles not flagged to be published to web.rdl" />
     <Report Include="Titles with Dewey numbers without a decimal.rdl" />
+    <Report Include="Titles with No Paper Quality.rdl" />
     <Report Include="Titles with over 50 on back order.rdl" />
     <Report Include="Titles with Release Date not received.rdl" />
     <Report Include="TMASTER Price Changes.rdl" />

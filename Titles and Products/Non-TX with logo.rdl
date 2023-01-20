@@ -17,28 +17,23 @@
     <DataSet Name="BTSB_Dataset_NonTXLogo">
       <Query>
         <DataSourceName>BTSB</DataSourceName>
-        <CommandText>SELECT        t.TitleNo, tm.ShortAuthorName AS Author, RTRIM(tm.ShortMarketingTitle) AS Title, t.CustomerNo, t.OrderNo, t.RequestedQty, t.AvailableQty, CASE h.AllocateBooks WHEN 1 THEN 'Order' ELSE 'Quote' END AS [Order Quote], 
-                         CASE t .IsPicked WHEN 1 THEN 'Picking Copy' ELSE '' END AS Picked
-FROM            Orders.dbo.Titles AS t INNER JOIN
-                         FULLTMASTER AS tm ON t.TitleNo = tm.titleno INNER JOIN
-                         Orders.dbo.Headers AS h ON t.CustomerNo = h.CustomerNo AND t.OrderNo = h.OrderNo INNER JOIN
-                         Orders.dbo.Customers AS c ON t.CustomerNo = c.CustomerNo INNER JOIN
-                         Orders.dbo.Addresses AS a ON c.MainAddress = a.AddressID
-WHERE        (t.TitleNo IN (
-'075789', '095048',
-'140432', '158114', '181308', 
-'270205', '409607', 
-'562981', '646226', 
-'816937', '857322', '902669', '907369', 
-'939544', '959066', '595924',
-'055049', '064923', '064693',
-'142953', '279261', '396550', '320932',
-'408984', '437950', '459963', '467409',
-'467322', '496875', '639387', '700111',
-'703595', '792381', '823778', '924824',
-'935991'))
+        <CommandText>SELECT        
+	t.TitleNo, tm.ShortAuthorName AS Author, RTRIM(tm.ShortMarketingTitle) AS Title, t.CustomerNo, t.OrderNo
+	,t.RequestedQty, t.AvailableQty, CASE h.AllocateBooks WHEN 1 THEN 'Order' ELSE 'Quote' END AS [Order Quote]
+	,CASE t.IsPicked WHEN 1 THEN 'Picking Copy' ELSE '' END AS Picked, a.StateOrProvince
+FROM Orders.dbo.Titles AS t INNER JOIN
+FULLTMASTER AS tm ON t.TitleNo = tm.titleno INNER JOIN
+Orders.dbo.Headers AS h ON t.CustomerNo = h.CustomerNo AND t.OrderNo = h.OrderNo INNER JOIN
+Orders.dbo.Customers AS c ON t.CustomerNo = c.CustomerNo INNER JOIN
+Orders.dbo.Addresses AS a ON c.MainAddress = a.AddressID
+WHERE t.TitleNo IN (
+	SELECT TITLENO
+	FROM SETX
+	WHERE SETNO IN ('S55368', 'S55183')
+)
 AND (a.StateOrProvince &lt;&gt; 'TX')
 ORDER BY t.CustomerNo, t.OrderNo, t.TitleNo</CommandText>
+        <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
       </Query>
       <Fields>
         <Field Name="TitleNo">
@@ -75,6 +70,10 @@ ORDER BY t.CustomerNo, t.OrderNo, t.TitleNo</CommandText>
         </Field>
         <Field Name="Picked">
           <DataField>Picked</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="StateOrProvince">
+          <DataField>StateOrProvince</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
       </Fields>

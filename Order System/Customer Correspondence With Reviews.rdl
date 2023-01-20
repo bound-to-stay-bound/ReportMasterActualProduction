@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Report MustUnderstand="df" xmlns="http://schemas.microsoft.com/sqlserver/reporting/2016/01/reportdefinition" xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner" xmlns:df="http://schemas.microsoft.com/sqlserver/reporting/2016/01/reportdefinition/defaultfontfamily">
+<Report MustUnderstand="df" xmlns="http://schemas.microsoft.com/sqlserver/reporting/2016/01/reportdefinition" xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner" xmlns:cl="http://schemas.microsoft.com/sqlserver/reporting/2010/01/componentdefinition" xmlns:df="http://schemas.microsoft.com/sqlserver/reporting/2016/01/reportdefinition/defaultfontfamily">
   <df:DefaultFontFamily>Segoe UI</df:DefaultFontFamily>
   <AutoRefresh>0</AutoRefresh>
   <DataSources>
@@ -14,7 +14,7 @@
     </DataSource>
   </DataSources>
   <DataSets>
-    <DataSet Name="BTSB_Dataset_CustCorr">
+    <DataSet Name="BTSB_Dataset_CustCorrWithReviews">
       <Query>
         <DataSourceName>BTSB</DataSourceName>
         <QueryParameters>
@@ -24,9 +24,12 @@
           <QueryParameter Name="@OrderNo">
             <Value>=Parameters!OrderNo.Value</Value>
           </QueryParameter>
+          <QueryParameter Name="@OrderBy">
+            <Value>=Parameters!OrderBy.Value</Value>
+          </QueryParameter>
         </QueryParameters>
         <CommandType>StoredProcedure</CommandType>
-        <CommandText>Report.rsCustCorr</CommandText>
+        <CommandText>Report.rsCustCorrWithReviews</CommandText>
       </Query>
       <Fields>
         <Field Name="ReportID">
@@ -161,8 +164,16 @@
           <DataField>high_age</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
+        <Field Name="TitleReadingLevelLow">
+          <DataField>TitleReadingLevelLow</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
         <Field Name="fne">
           <DataField>fne</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="TitleReadingLevelHigh">
+          <DataField>TitleReadingLevelHigh</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
         <Field Name="dewey">
@@ -175,6 +186,10 @@
         </Field>
         <Field Name="ar_reading">
           <DataField>ar_reading</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="Reviews">
+          <DataField>Reviews</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
         <Field Name="ShippingAttn1">
@@ -231,78 +246,6 @@
         </Field>
         <Field Name="BillingZip5">
           <DataField>BillingZip5</DataField>
-          <rd:TypeName>System.String</rd:TypeName>
-        </Field>
-        <Field Name="RLS01">
-          <DataField>RLS01</DataField>
-          <rd:TypeName>System.String</rd:TypeName>
-        </Field>
-        <Field Name="RLS02">
-          <DataField>RLS02</DataField>
-          <rd:TypeName>System.String</rd:TypeName>
-        </Field>
-        <Field Name="RLS03">
-          <DataField>RLS03</DataField>
-          <rd:TypeName>System.String</rd:TypeName>
-        </Field>
-        <Field Name="RLS04">
-          <DataField>RLS04</DataField>
-          <rd:TypeName>System.String</rd:TypeName>
-        </Field>
-        <Field Name="RLS05">
-          <DataField>RLS05</DataField>
-          <rd:TypeName>System.String</rd:TypeName>
-        </Field>
-        <Field Name="RLS06">
-          <DataField>RLS06</DataField>
-          <rd:TypeName>System.String</rd:TypeName>
-        </Field>
-        <Field Name="RLS07">
-          <DataField>RLS07</DataField>
-          <rd:TypeName>System.String</rd:TypeName>
-        </Field>
-        <Field Name="RLS08">
-          <DataField>RLS08</DataField>
-          <rd:TypeName>System.String</rd:TypeName>
-        </Field>
-        <Field Name="RLS09">
-          <DataField>RLS09</DataField>
-          <rd:TypeName>System.String</rd:TypeName>
-        </Field>
-        <Field Name="RLS10">
-          <DataField>RLS10</DataField>
-          <rd:TypeName>System.String</rd:TypeName>
-        </Field>
-        <Field Name="RLS11">
-          <DataField>RLS11</DataField>
-          <rd:TypeName>System.String</rd:TypeName>
-        </Field>
-        <Field Name="RLS12">
-          <DataField>RLS12</DataField>
-          <rd:TypeName>System.String</rd:TypeName>
-        </Field>
-        <Field Name="RLS13">
-          <DataField>RLS13</DataField>
-          <rd:TypeName>System.String</rd:TypeName>
-        </Field>
-        <Field Name="RLS14">
-          <DataField>RLS14</DataField>
-          <rd:TypeName>System.String</rd:TypeName>
-        </Field>
-        <Field Name="RLS15">
-          <DataField>RLS15</DataField>
-          <rd:TypeName>System.String</rd:TypeName>
-        </Field>
-        <Field Name="RLS16">
-          <DataField>RLS16</DataField>
-          <rd:TypeName>System.String</rd:TypeName>
-        </Field>
-        <Field Name="RLS17">
-          <DataField>RLS17</DataField>
-          <rd:TypeName>System.String</rd:TypeName>
-        </Field>
-        <Field Name="RLS18">
-          <DataField>RLS18</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
         <Field Name="FixTax">
@@ -869,7 +812,7 @@ GROUP BY
             </TablixRowHierarchy>
             <KeepTogether>true</KeepTogether>
             <DataSetName>BTSB_Dataset_CustCorrTotals</DataSetName>
-            <Top>2.61805in</Top>
+            <Top>2.68404in</Top>
             <Left>7.95681in</Left>
             <Height>1.47915in</Height>
             <Width>2.70901in</Width>
@@ -884,7 +827,7 @@ GROUP BY
             <TablixBody>
               <TablixColumns>
                 <TablixColumn>
-                  <Width>1.04127in</Width>
+                  <Width>0.7496in</Width>
                 </TablixColumn>
                 <TablixColumn>
                   <Width>0.45544in</Width>
@@ -893,10 +836,7 @@ GROUP BY
                   <Width>0.96064in</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>3.63356in</Width>
-                </TablixColumn>
-                <TablixColumn>
-                  <Width>0.64085in</Width>
+                  <Width>3.06064in</Width>
                 </TablixColumn>
                 <TablixColumn>
                   <Width>0.71479in</Width>
@@ -905,15 +845,21 @@ GROUP BY
                   <Width>1.02835in</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>0.96585in</Width>
+                  <Width>0.76793in</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>0.96586in</Width>
+                  <Width>0.83881in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>0.83044in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1in</Width>
                 </TablixColumn>
               </TablixColumns>
               <TablixRows>
                 <TablixRow>
-                  <Height>0.25in</Height>
+                  <Height>0.41667in</Height>
                   <TablixCells>
                     <TablixCell>
                       <CellContents>
@@ -1133,60 +1079,6 @@ GROUP BY
                     </TablixCell>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="Textbox12">
-                          <CanGrow>true</CanGrow>
-                          <KeepTogether>true</KeepTogether>
-                          <Paragraphs>
-                            <Paragraph>
-                              <TextRuns>
-                                <TextRun>
-                                  <Value>Item</Value>
-                                  <Style>
-                                    <FontFamily>Arial</FontFamily>
-                                    <FontWeight>Bold</FontWeight>
-                                  </Style>
-                                </TextRun>
-                              </TextRuns>
-                              <Style>
-                                <TextAlign>Center</TextAlign>
-                              </Style>
-                            </Paragraph>
-                          </Paragraphs>
-                          <rd:DefaultName>Textbox12</rd:DefaultName>
-                          <Style>
-                            <Border>
-                              <Style>None</Style>
-                            </Border>
-                            <TopBorder>
-                              <Color>Black</Color>
-                              <Style>Solid</Style>
-                              <Width>1pt</Width>
-                            </TopBorder>
-                            <BottomBorder>
-                              <Color>Black</Color>
-                              <Style>Solid</Style>
-                              <Width>1pt</Width>
-                            </BottomBorder>
-                            <LeftBorder>
-                              <Color>Black</Color>
-                              <Style>Solid</Style>
-                              <Width>1pt</Width>
-                            </LeftBorder>
-                            <RightBorder>
-                              <Color>Black</Color>
-                              <Style>Solid</Style>
-                              <Width>1pt</Width>
-                            </RightBorder>
-                            <PaddingLeft>2pt</PaddingLeft>
-                            <PaddingRight>2pt</PaddingRight>
-                            <PaddingTop>2pt</PaddingTop>
-                            <PaddingBottom>2pt</PaddingBottom>
-                          </Style>
-                        </Textbox>
-                      </CellContents>
-                    </TablixCell>
-                    <TablixCell>
-                      <CellContents>
                         <Textbox Name="Textbox16">
                           <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
@@ -1302,6 +1194,20 @@ GROUP BY
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
+                                  <Value>Interest</Value>
+                                  <Style>
+                                    <FontFamily>Arial</FontFamily>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
                                   <Value>Ages</Value>
                                   <Style>
                                     <FontFamily>Arial</FontFamily>
@@ -1315,6 +1221,60 @@ GROUP BY
                             </Paragraph>
                           </Paragraphs>
                           <rd:DefaultName>Textbox28</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
+                            <TopBorder>
+                              <Color>Black</Color>
+                              <Style>Solid</Style>
+                              <Width>1pt</Width>
+                            </TopBorder>
+                            <BottomBorder>
+                              <Color>Black</Color>
+                              <Style>Solid</Style>
+                              <Width>1pt</Width>
+                            </BottomBorder>
+                            <LeftBorder>
+                              <Color>Black</Color>
+                              <Style>Solid</Style>
+                              <Width>1pt</Width>
+                            </LeftBorder>
+                            <RightBorder>
+                              <Color>Black</Color>
+                              <Style>Solid</Style>
+                              <Width>1pt</Width>
+                            </RightBorder>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox2">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Reading Level Ages</Value>
+                                  <Style>
+                                    <FontFamily>Arial</FontFamily>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox2</rd:DefaultName>
                           <Style>
                             <Border>
                               <Style>None</Style>
@@ -1401,6 +1361,60 @@ GROUP BY
                         </Textbox>
                       </CellContents>
                     </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox18">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Reviews</Value>
+                                  <Style>
+                                    <FontFamily>Arial</FontFamily>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox18</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
+                            <TopBorder>
+                              <Color>Black</Color>
+                              <Style>Solid</Style>
+                              <Width>1pt</Width>
+                            </TopBorder>
+                            <BottomBorder>
+                              <Color>Black</Color>
+                              <Style>Solid</Style>
+                              <Width>1pt</Width>
+                            </BottomBorder>
+                            <LeftBorder>
+                              <Color>Black</Color>
+                              <Style>Solid</Style>
+                              <Width>1pt</Width>
+                            </LeftBorder>
+                            <RightBorder>
+                              <Color>Black</Color>
+                              <Style>Solid</Style>
+                              <Width>1pt</Width>
+                            </RightBorder>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
                   </TablixCells>
                 </TablixRow>
                 <TablixRow>
@@ -1418,6 +1432,7 @@ GROUP BY
                                   <Value>=Fields!TitleNo.Value</Value>
                                   <Style>
                                     <FontFamily>Arial</FontFamily>
+                                    <FontSize>8pt</FontSize>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
@@ -1452,6 +1467,7 @@ GROUP BY
                                   <Value>=Fields!RequestedQty.Value</Value>
                                   <Style>
                                     <FontFamily>Arial</FontFamily>
+                                    <FontSize>8pt</FontSize>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
@@ -1486,6 +1502,7 @@ GROUP BY
                                   <Value>=Fields!author.Value</Value>
                                   <Style>
                                     <FontFamily>Arial</FontFamily>
+                                    <FontSize>8pt</FontSize>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
@@ -1539,6 +1556,7 @@ GROUP BY
                                   <Value>=Fields!title.Value</Value>
                                   <Style>
                                     <FontFamily>Arial</FontFamily>
+                                    <FontSize>8pt</FontSize>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
@@ -1548,59 +1566,6 @@ GROUP BY
                             </Paragraph>
                           </Paragraphs>
                           <rd:DefaultName>title1</rd:DefaultName>
-                          <Style>
-                            <Border>
-                              <Style>None</Style>
-                            </Border>
-                            <TopBorder>
-                              <Color>Black</Color>
-                              <Style>Solid</Style>
-                              <Width>1pt</Width>
-                            </TopBorder>
-                            <BottomBorder>
-                              <Color>Black</Color>
-                              <Style>Solid</Style>
-                              <Width>1pt</Width>
-                            </BottomBorder>
-                            <LeftBorder>
-                              <Color>Black</Color>
-                              <Style>Solid</Style>
-                              <Width>1pt</Width>
-                            </LeftBorder>
-                            <RightBorder>
-                              <Color>Black</Color>
-                              <Style>Solid</Style>
-                              <Width>1pt</Width>
-                            </RightBorder>
-                            <PaddingLeft>2pt</PaddingLeft>
-                            <PaddingRight>2pt</PaddingRight>
-                            <PaddingTop>2pt</PaddingTop>
-                            <PaddingBottom>2pt</PaddingBottom>
-                          </Style>
-                        </Textbox>
-                      </CellContents>
-                    </TablixCell>
-                    <TablixCell>
-                      <CellContents>
-                        <Textbox Name="ItemNo1">
-                          <CanGrow>true</CanGrow>
-                          <KeepTogether>true</KeepTogether>
-                          <Paragraphs>
-                            <Paragraph>
-                              <TextRuns>
-                                <TextRun>
-                                  <Value>=IIF(ISNOTHING(Fields!CancelCode.value) or Fields!CancelCode.value="",Fields!ItemNo.Value,"")</Value>
-                                  <Style>
-                                    <FontFamily>Arial</FontFamily>
-                                  </Style>
-                                </TextRun>
-                              </TextRuns>
-                              <Style>
-                                <TextAlign>Left</TextAlign>
-                              </Style>
-                            </Paragraph>
-                          </Paragraphs>
-                          <rd:DefaultName>ItemNo1</rd:DefaultName>
                           <Style>
                             <Border>
                               <Style>None</Style>
@@ -1645,6 +1610,7 @@ GROUP BY
                                   <Value>=IIF(ISNOTHING(Fields!CancelCode.value) or Fields!CancelCode.value="",Fields!EstimatedCost.Value,"")</Value>
                                   <Style>
                                     <FontFamily>Arial</FontFamily>
+                                    <FontSize>8pt</FontSize>
                                     <Format>'$'#,0.00;('$'#,0.00)</Format>
                                   </Style>
                                 </TextRun>
@@ -1680,6 +1646,7 @@ GROUP BY
                                   <Value>=IIF(ISNOTHING(Fields!CancelCode.value) or Fields!CancelCode.value="",Fields!RequestedQty.Value*Fields!EstimatedCost.Value,"Cancelled")</Value>
                                   <Style>
                                     <FontFamily>Arial</FontFamily>
+                                    <FontSize>8pt</FontSize>
                                     <Format>'$'#,0.00</Format>
                                   </Style>
                                 </TextRun>
@@ -1734,6 +1701,62 @@ GROUP BY
                                   <Value>=IIF(ISNOTHING(Fields!CancelCode.value) or Fields!CancelCode.value="",Fields!low_age.Value &amp; " - " &amp; Fields!high_age.Value,"")</Value>
                                   <Style>
                                     <FontFamily>Arial</FontFamily>
+                                    <FontSize>8pt</FontSize>
+                                    <Format>#,0.00</Format>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox29</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
+                            <TopBorder>
+                              <Color>Black</Color>
+                              <Style>Solid</Style>
+                              <Width>1pt</Width>
+                            </TopBorder>
+                            <BottomBorder>
+                              <Color>Black</Color>
+                              <Style>Solid</Style>
+                              <Width>1pt</Width>
+                            </BottomBorder>
+                            <LeftBorder>
+                              <Color>Black</Color>
+                              <Style>Solid</Style>
+                              <Width>1pt</Width>
+                            </LeftBorder>
+                            <RightBorder>
+                              <Color>Black</Color>
+                              <Style>Solid</Style>
+                              <Width>1pt</Width>
+                            </RightBorder>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox34">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=IIF(ISNOTHING(Fields!CancelCode.value) Or Fields!CancelCode.value = "", Fields!TitleReadingLevelLow.Value &amp; " - " &amp; Fields!TitleReadingLevelHigh.Value, "")</Value>
+                                  <Style>
+                                    <FontFamily>Arial</FontFamily>
+                                    <FontSize>8pt</FontSize>
                                     <Format>#,0.00</Format>
                                   </Style>
                                 </TextRun>
@@ -1785,18 +1808,74 @@ GROUP BY
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=IIF(ISNOTHING(Fields!CancelCode.value) or Fields!CancelCode.value="",Fields!fne.Value &amp; "    " &amp; Fields!dewey.Value,"")</Value>
+                                  <Value>=IIF(ISNOTHING(Fields!CancelCode.value) or Fields!CancelCode.value="", "  " &amp; Fields!fne.Value &amp; "  " &amp; Fields!dewey.Value,"")</Value>
                                   <Style>
                                     <FontFamily>Arial</FontFamily>
+                                    <FontSize>8pt</FontSize>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
                               <Style>
-                                <TextAlign>Center</TextAlign>
+                                <TextAlign>Left</TextAlign>
                               </Style>
                             </Paragraph>
                           </Paragraphs>
                           <rd:DefaultName>Textbox31</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
+                            <TopBorder>
+                              <Color>Black</Color>
+                              <Style>Solid</Style>
+                              <Width>1pt</Width>
+                            </TopBorder>
+                            <BottomBorder>
+                              <Color>Black</Color>
+                              <Style>Solid</Style>
+                              <Width>1pt</Width>
+                            </BottomBorder>
+                            <LeftBorder>
+                              <Color>Black</Color>
+                              <Style>Solid</Style>
+                              <Width>1pt</Width>
+                            </LeftBorder>
+                            <RightBorder>
+                              <Color>Black</Color>
+                              <Style>Solid</Style>
+                              <Width>1pt</Width>
+                            </RightBorder>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox37">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=IIF(ISNOTHING(Fields!CancelCode.value) Or Fields!CancelCode.value = "", "  " &amp; Fields!Reviews.Value, "")</Value>
+                                  <Style>
+                                    <FontFamily>Arial</FontFamily>
+                                    <FontSize>8pt</FontSize>
+                                    <Format>#,0.00</Format>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Left</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox29</rd:DefaultName>
                           <Style>
                             <Border>
                               <Style>None</Style>
@@ -1903,6 +1982,7 @@ GROUP BY
                                   <Label>Cancelled: </Label>
                                   <Value>=Fields!CancelReason.Value</Value>
                                   <Style>
+                                    <FontSize>8pt</FontSize>
                                     <FontWeight>Bold</FontWeight>
                                   </Style>
                                 </TextRun>
@@ -1925,9 +2005,10 @@ GROUP BY
                             <PaddingBottom>2pt</PaddingBottom>
                           </Style>
                         </Textbox>
-                        <ColSpan>5</ColSpan>
+                        <ColSpan>6</ColSpan>
                       </CellContents>
                     </TablixCell>
+                    <TablixCell />
                     <TablixCell />
                     <TablixCell />
                     <TablixCell />
@@ -1938,6 +2019,7 @@ GROUP BY
             </TablixBody>
             <TablixColumnHierarchy>
               <TablixMembers>
+                <TablixMember />
                 <TablixMember />
                 <TablixMember />
                 <TablixMember />
@@ -1969,11 +2051,6 @@ GROUP BY
                   <TablixMembers>
                     <TablixMember>
                       <Group Name="Details1" />
-                      <SortExpressions>
-                        <SortExpression>
-                          <Value>=Fields!author.Value</Value>
-                        </SortExpression>
-                      </SortExpressions>
                       <TablixMembers>
                         <TablixMember />
                         <TablixMember>
@@ -1990,11 +2067,11 @@ GROUP BY
             <RepeatColumnHeaders>true</RepeatColumnHeaders>
             <RepeatRowHeaders>true</RepeatRowHeaders>
             <NoRowsMessage>There is no current information for this report!</NoRowsMessage>
-            <DataSetName>BTSB_Dataset_CustCorr</DataSetName>
+            <DataSetName>BTSB_Dataset_CustCorrWithReviews</DataSetName>
             <Top>1.74181in</Top>
             <Left>0.25917in</Left>
-            <Height>0.72in</Height>
-            <Width>10.40661in</Width>
+            <Height>0.88667in</Height>
+            <Width>10.40664in</Width>
             <ZIndex>2</ZIndex>
             <Style>
               <Border />
@@ -2289,7 +2366,7 @@ GROUP BY
                 </TablixMember>
               </TablixMembers>
             </TablixRowHierarchy>
-            <DataSetName>BTSB_Dataset_CustCorr</DataSetName>
+            <DataSetName>BTSB_Dataset_CustCorrWithReviews</DataSetName>
             <Top>0.12027in</Top>
             <Left>6.08769in</Left>
             <Height>1.5in</Height>
@@ -2582,7 +2659,7 @@ GROUP BY
                 </TablixMember>
               </TablixMembers>
             </TablixRowHierarchy>
-            <DataSetName>BTSB_Dataset_CustCorr</DataSetName>
+            <DataSetName>BTSB_Dataset_CustCorrWithReviews</DataSetName>
             <Top>0.12027in</Top>
             <Left>3.69011in</Left>
             <Height>1.5in</Height>
@@ -3053,7 +3130,7 @@ GROUP BY
                 <TablixMember />
               </TablixMembers>
             </TablixRowHierarchy>
-            <DataSetName>BTSB_Dataset_CustCorr</DataSetName>
+            <DataSetName>BTSB_Dataset_CustCorrWithReviews</DataSetName>
             <Top>0.12027in</Top>
             <Left>8.49915in</Left>
             <Height>1.5in</Height>
@@ -3065,14 +3142,122 @@ GROUP BY
               </Border>
             </Style>
           </Tablix>
+          <Textbox Name="Textbox41">
+            <CanGrow>true</CanGrow>
+            <KeepTogether>true</KeepTogether>
+            <Paragraphs>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>K = Kirkus</Value>
+                    <Style>
+                      <FontSize>8pt</FontSize>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style />
+              </Paragraph>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>B = Booklist</Value>
+                    <Style>
+                      <FontSize>8pt</FontSize>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style />
+              </Paragraph>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>H = Hornbook</Value>
+                    <Style>
+                      <FontSize>8pt</FontSize>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style />
+              </Paragraph>
+            </Paragraphs>
+            <rd:DefaultName>Textbox41</rd:DefaultName>
+            <Top>2.64237in</Top>
+            <Left>1.27973in</Left>
+            <Height>0.46875in</Height>
+            <Width>1.01746in</Width>
+            <ZIndex>6</ZIndex>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+              <PaddingLeft>2pt</PaddingLeft>
+              <PaddingRight>2pt</PaddingRight>
+              <PaddingTop>2pt</PaddingTop>
+              <PaddingBottom>2pt</PaddingBottom>
+            </Style>
+          </Textbox>
+          <Textbox Name="Textbox42">
+            <CanGrow>true</CanGrow>
+            <KeepTogether>true</KeepTogether>
+            <Paragraphs>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>L = School Library Journal</Value>
+                    <Style>
+                      <FontSize>8pt</FontSize>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style />
+              </Paragraph>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>C = University of Chicago</Value>
+                    <Style>
+                      <FontSize>8pt</FontSize>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style />
+              </Paragraph>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>P = Publisher's Weekly</Value>
+                    <Style>
+                      <FontSize>8pt</FontSize>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style />
+              </Paragraph>
+            </Paragraphs>
+            <rd:DefaultName>Textbox41</rd:DefaultName>
+            <Top>2.64237in</Top>
+            <Left>2.42485in</Left>
+            <Height>0.46875in</Height>
+            <Width>1.83044in</Width>
+            <ZIndex>7</ZIndex>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+              <PaddingLeft>2pt</PaddingLeft>
+              <PaddingRight>2pt</PaddingRight>
+              <PaddingTop>2pt</PaddingTop>
+              <PaddingBottom>2pt</PaddingBottom>
+            </Style>
+          </Textbox>
         </ReportItems>
-        <Height>4.11109in</Height>
+        <Height>4.16319in</Height>
         <Style />
       </Body>
-      <Width>10.90625in</Width>
+      <Width>10.66582in</Width>
       <Page>
         <PageFooter>
-          <Height>0.38542in</Height>
+          <Height>0.49653in</Height>
           <PrintOnFirstPage>true</PrintOnFirstPage>
           <PrintOnLastPage>true</PrintOnLastPage>
           <ReportItems>
@@ -3093,9 +3278,9 @@ GROUP BY
                 </Paragraph>
               </Paragraphs>
               <Top>0.06944in</Top>
-              <Left>0.25917in</Left>
+              <Left>3.155in</Left>
               <Height>0.25in</Height>
-              <Width>10.40665in</Width>
+              <Width>4.55181in</Width>
               <Style>
                 <Border>
                   <Style>None</Style>
@@ -3125,11 +3310,52 @@ GROUP BY
   <ReportParameters>
     <ReportParameter Name="Customer">
       <DataType>String</DataType>
-      <Prompt>Customer?</Prompt>
+      <Prompt>Customer #</Prompt>
     </ReportParameter>
     <ReportParameter Name="OrderNo">
       <DataType>String</DataType>
-      <Prompt>Order Number?</Prompt>
+      <Prompt>Order #</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="OrderBy">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>1</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>Order By</Prompt>
+      <ValidValues>
+        <ParameterValues>
+          <ParameterValue>
+            <Value>1</Value>
+            <Label>Author, Title</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>2</Value>
+            <Label>Title, Author</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>3</Value>
+            <Label>Price, Author, Title</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>4</Value>
+            <Label>FNE, Dewey, Author, Title</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>5</Value>
+            <Label>Interest Age, Author, Title</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>6</Value>
+            <Label>Reading Level, Author, Title</Label>
+          </ParameterValue>
+        </ParameterValues>
+      </ValidValues>
+      <UsedInQuery>True</UsedInQuery>
+      <cl:ComponentMetadata>
+        <cl:HideUpdateNotifications>true</cl:HideUpdateNotifications>
+      </cl:ComponentMetadata>
     </ReportParameter>
   </ReportParameters>
   <ReportParametersLayout>
@@ -3146,6 +3372,11 @@ GROUP BY
           <ColumnIndex>1</ColumnIndex>
           <RowIndex>0</RowIndex>
           <ParameterName>OrderNo</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>2</ColumnIndex>
+          <RowIndex>0</RowIndex>
+          <ParameterName>OrderBy</ParameterName>
         </CellDefinition>
       </CellDefinitions>
     </GridLayoutDefinition>
