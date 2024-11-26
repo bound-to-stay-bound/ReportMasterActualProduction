@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Report MustUnderstand="df" xmlns="http://schemas.microsoft.com/sqlserver/reporting/2016/01/reportdefinition" xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner" xmlns:df="http://schemas.microsoft.com/sqlserver/reporting/2016/01/reportdefinition/defaultfontfamily">
   <df:DefaultFontFamily>Segoe UI</df:DefaultFontFamily>
   <AutoRefresh>0</AutoRefresh>
@@ -6,38 +6,33 @@
     <DataSource Name="BTSB">
       <ConnectionProperties>
         <DataProvider>SQL</DataProvider>
-        <ConnectString>Data source=SQLServer; Initial Catalog=BTSB</ConnectString>
+        <ConnectString>Data Source=SQLServer; Initial Catalog=btsb</ConnectString>
         <IntegratedSecurity>true</IntegratedSecurity>
       </ConnectionProperties>
       <rd:SecurityType>Integrated</rd:SecurityType>
-      <rd:DataSourceID>629226ee-d236-4619-8452-503ad5a64696</rd:DataSourceID>
+      <rd:DataSourceID>eb8e853e-439c-4ea7-baca-86743794d72f</rd:DataSourceID>
     </DataSource>
   </DataSources>
   <DataSets>
-    <DataSet Name="BTSB_Dataset_NonTXLogo">
+    <DataSet Name="DataSet1">
       <Query>
         <DataSourceName>BTSB</DataSourceName>
-        <CommandText>SELECT        
-	t.TitleNo, tm.ShortAuthorName AS Author, RTRIM(tm.ShortMarketingTitle) AS Title, t.CustomerNo, t.OrderNo
-	,t.RequestedQty, t.AvailableQty, CASE h.AllocateBooks WHEN 1 THEN 'Order' ELSE 'Quote' END AS [Order Quote]
-	,CASE t.IsPicked WHEN 1 THEN 'Picking Copy' ELSE '' END AS Picked, a.StateOrProvince
-FROM Orders.dbo.Titles AS t INNER JOIN
-FULLTMASTER AS tm ON t.TitleNo = tm.titleno INNER JOIN
-Orders.dbo.Headers AS h ON t.CustomerNo = h.CustomerNo AND t.OrderNo = h.OrderNo INNER JOIN
-Orders.dbo.Customers AS c ON t.CustomerNo = c.CustomerNo INNER JOIN
-Orders.dbo.Addresses AS a ON c.MainAddress = a.AddressID
-WHERE t.TitleNo IN (
-	SELECT TITLENO
-	FROM SETX
-	WHERE SETNO IN ('S55368', 'S55183', 'S47949')
-)
-AND (a.StateOrProvince &lt;&gt; 'TX')
-ORDER BY t.CustomerNo, t.OrderNo, t.TitleNo</CommandText>
+        <CommandText>SELECT
+	ft.titleno AS TitleNumber, ft.author AS Author, ft.title AS Title,
+	ft.season_code AS SeasonCode, CONVERT(int, ft.available) AS Available,
+	CONVERT(int, ft.back_order) AS BackOrder,
+	ft.lc_no AS LCNumber
+FROM FULLTMASTER AS ft
+WHERE ft.active = 'T'
+AND CONVERT(int, ft.available) &gt; 0
+AND ISNUMERIC(ft.titleno) = 1 and ft.titleno NOT IN ('040712')
+AND LTRIM(RTRIM(ft.lc_no)) = ''
+ORDER BY CONVERT(int, ft.back_order) DESC, ft.author, ft.title</CommandText>
         <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
       </Query>
       <Fields>
-        <Field Name="TitleNo">
-          <DataField>TitleNo</DataField>
+        <Field Name="TitleNumber">
+          <DataField>TitleNumber</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
         <Field Name="Author">
@@ -48,32 +43,20 @@ ORDER BY t.CustomerNo, t.OrderNo, t.TitleNo</CommandText>
           <DataField>Title</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
-        <Field Name="CustomerNo">
-          <DataField>CustomerNo</DataField>
+        <Field Name="SeasonCode">
+          <DataField>SeasonCode</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
-        <Field Name="OrderNo">
-          <DataField>OrderNo</DataField>
+        <Field Name="Available">
+          <DataField>Available</DataField>
           <rd:TypeName>System.Int32</rd:TypeName>
         </Field>
-        <Field Name="RequestedQty">
-          <DataField>RequestedQty</DataField>
+        <Field Name="BackOrder">
+          <DataField>BackOrder</DataField>
           <rd:TypeName>System.Int32</rd:TypeName>
         </Field>
-        <Field Name="AvailableQty">
-          <DataField>AvailableQty</DataField>
-          <rd:TypeName>System.Int32</rd:TypeName>
-        </Field>
-        <Field Name="Order_Quote">
-          <DataField>Order Quote</DataField>
-          <rd:TypeName>System.String</rd:TypeName>
-        </Field>
-        <Field Name="Picked">
-          <DataField>Picked</DataField>
-          <rd:TypeName>System.String</rd:TypeName>
-        </Field>
-        <Field Name="StateOrProvince">
-          <DataField>StateOrProvince</DataField>
+        <Field Name="LCNumber">
+          <DataField>LCNumber</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
       </Fields>
@@ -83,67 +66,62 @@ ORDER BY t.CustomerNo, t.OrderNo, t.TitleNo</CommandText>
     <ReportSection>
       <Body>
         <ReportItems>
-          <Tablix Name="Tablix1">
+          <Tablix Name="table1">
             <TablixBody>
               <TablixColumns>
                 <TablixColumn>
-                  <Width>0.75in</Width>
+                  <Width>0.92708in</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>1.46875in</Width>
+                  <Width>1.64583in</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>2.40625in</Width>
+                  <Width>2.69791in</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>1in</Width>
+                  <Width>0.92708in</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>0.70833in</Width>
+                  <Width>0.92708in</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>1.04167in</Width>
-                </TablixColumn>
-                <TablixColumn>
-                  <Width>1in</Width>
-                </TablixColumn>
-                <TablixColumn>
-                  <Width>1in</Width>
-                </TablixColumn>
-                <TablixColumn>
-                  <Width>1in</Width>
+                  <Width>0.92708in</Width>
                 </TablixColumn>
               </TablixColumns>
               <TablixRows>
                 <TablixRow>
-                  <Height>0.25in</Height>
+                  <Height>0.22in</Height>
                   <TablixCells>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="Textbox1">
+                        <Textbox Name="textbox2">
                           <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>TitleNo</Value>
+                                  <Value>Title #</Value>
                                   <Style>
-                                    <FontFamily>Arial</FontFamily>
+                                    <FontFamily />
+                                    <FontSize>8pt</FontSize>
                                     <FontWeight>Bold</FontWeight>
-                                    <TextDecoration>Underline</TextDecoration>
+                                    <Color>#666666</Color>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
                               <Style />
                             </Paragraph>
                           </Paragraphs>
-                          <rd:DefaultName>Textbox1</rd:DefaultName>
+                          <rd:DefaultName>textbox2</rd:DefaultName>
                           <Style>
                             <Border>
                               <Color>LightGrey</Color>
-                              <Style>None</Style>
                             </Border>
+                            <BottomBorder>
+                              <Style>Solid</Style>
+                            </BottomBorder>
+                            <FontFamily />
                             <PaddingLeft>2pt</PaddingLeft>
                             <PaddingRight>2pt</PaddingRight>
                             <PaddingTop>2pt</PaddingTop>
@@ -154,7 +132,7 @@ ORDER BY t.CustomerNo, t.OrderNo, t.TitleNo</CommandText>
                     </TablixCell>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="Textbox3">
+                        <Textbox Name="textbox3">
                           <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
@@ -163,21 +141,25 @@ ORDER BY t.CustomerNo, t.OrderNo, t.TitleNo</CommandText>
                                 <TextRun>
                                   <Value>Author</Value>
                                   <Style>
-                                    <FontFamily>Arial</FontFamily>
+                                    <FontFamily />
+                                    <FontSize>8pt</FontSize>
                                     <FontWeight>Bold</FontWeight>
-                                    <TextDecoration>Underline</TextDecoration>
+                                    <Color>#666666</Color>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
                               <Style />
                             </Paragraph>
                           </Paragraphs>
-                          <rd:DefaultName>Textbox3</rd:DefaultName>
+                          <rd:DefaultName>textbox3</rd:DefaultName>
                           <Style>
                             <Border>
                               <Color>LightGrey</Color>
-                              <Style>None</Style>
                             </Border>
+                            <BottomBorder>
+                              <Style>Solid</Style>
+                            </BottomBorder>
+                            <FontFamily />
                             <PaddingLeft>2pt</PaddingLeft>
                             <PaddingRight>2pt</PaddingRight>
                             <PaddingTop>2pt</PaddingTop>
@@ -188,7 +170,7 @@ ORDER BY t.CustomerNo, t.OrderNo, t.TitleNo</CommandText>
                     </TablixCell>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="Textbox5">
+                        <Textbox Name="textbox4">
                           <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
@@ -197,21 +179,25 @@ ORDER BY t.CustomerNo, t.OrderNo, t.TitleNo</CommandText>
                                 <TextRun>
                                   <Value>Title</Value>
                                   <Style>
-                                    <FontFamily>Arial</FontFamily>
+                                    <FontFamily />
+                                    <FontSize>8pt</FontSize>
                                     <FontWeight>Bold</FontWeight>
-                                    <TextDecoration>Underline</TextDecoration>
+                                    <Color>#666666</Color>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
                               <Style />
                             </Paragraph>
                           </Paragraphs>
-                          <rd:DefaultName>Textbox5</rd:DefaultName>
+                          <rd:DefaultName>textbox4</rd:DefaultName>
                           <Style>
                             <Border>
                               <Color>LightGrey</Color>
-                              <Style>None</Style>
                             </Border>
+                            <BottomBorder>
+                              <Style>Solid</Style>
+                            </BottomBorder>
+                            <FontFamily />
                             <PaddingLeft>2pt</PaddingLeft>
                             <PaddingRight>2pt</PaddingRight>
                             <PaddingTop>2pt</PaddingTop>
@@ -222,30 +208,36 @@ ORDER BY t.CustomerNo, t.OrderNo, t.TitleNo</CommandText>
                     </TablixCell>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="Textbox7">
+                        <Textbox Name="textbox5">
                           <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>CustomerNo</Value>
+                                  <Value>Season Code</Value>
                                   <Style>
-                                    <FontFamily>Arial</FontFamily>
+                                    <FontFamily />
+                                    <FontSize>8pt</FontSize>
                                     <FontWeight>Bold</FontWeight>
-                                    <TextDecoration>Underline</TextDecoration>
+                                    <Color>#666666</Color>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
-                              <Style />
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
                             </Paragraph>
                           </Paragraphs>
-                          <rd:DefaultName>Textbox7</rd:DefaultName>
+                          <rd:DefaultName>textbox5</rd:DefaultName>
                           <Style>
                             <Border>
                               <Color>LightGrey</Color>
-                              <Style>None</Style>
                             </Border>
+                            <BottomBorder>
+                              <Style>Solid</Style>
+                            </BottomBorder>
+                            <FontFamily />
                             <PaddingLeft>2pt</PaddingLeft>
                             <PaddingRight>2pt</PaddingRight>
                             <PaddingTop>2pt</PaddingTop>
@@ -256,30 +248,37 @@ ORDER BY t.CustomerNo, t.OrderNo, t.TitleNo</CommandText>
                     </TablixCell>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="Textbox9">
+                        <Textbox Name="textbox6">
                           <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>Order No</Value>
+                                  <Value>Available</Value>
                                   <Style>
-                                    <FontFamily>Arial</FontFamily>
+                                    <FontFamily />
+                                    <FontSize>8pt</FontSize>
                                     <FontWeight>Bold</FontWeight>
-                                    <TextDecoration>Underline</TextDecoration>
+                                    <Color>#666666</Color>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
-                              <Style />
+                              <Style>
+                                <FontFamily />
+                                <TextAlign>Right</TextAlign>
+                              </Style>
                             </Paragraph>
                           </Paragraphs>
-                          <rd:DefaultName>Textbox9</rd:DefaultName>
+                          <rd:DefaultName>textbox6</rd:DefaultName>
                           <Style>
                             <Border>
                               <Color>LightGrey</Color>
-                              <Style>None</Style>
                             </Border>
+                            <BottomBorder>
+                              <Style>Solid</Style>
+                            </BottomBorder>
+                            <FontFamily />
                             <PaddingLeft>2pt</PaddingLeft>
                             <PaddingRight>2pt</PaddingRight>
                             <PaddingTop>2pt</PaddingTop>
@@ -290,132 +289,37 @@ ORDER BY t.CustomerNo, t.OrderNo, t.TitleNo</CommandText>
                     </TablixCell>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="Textbox11">
+                        <Textbox Name="textbox7">
                           <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>Requested Qty</Value>
+                                  <Value>Back Order</Value>
                                   <Style>
-                                    <FontFamily>Arial</FontFamily>
+                                    <FontFamily />
+                                    <FontSize>8pt</FontSize>
                                     <FontWeight>Bold</FontWeight>
-                                    <TextDecoration>Underline</TextDecoration>
+                                    <Color>#666666</Color>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
-                              <Style />
+                              <Style>
+                                <FontFamily />
+                                <TextAlign>Right</TextAlign>
+                              </Style>
                             </Paragraph>
                           </Paragraphs>
-                          <rd:DefaultName>Textbox11</rd:DefaultName>
+                          <rd:DefaultName>textbox7</rd:DefaultName>
                           <Style>
                             <Border>
                               <Color>LightGrey</Color>
-                              <Style>None</Style>
                             </Border>
-                            <PaddingLeft>2pt</PaddingLeft>
-                            <PaddingRight>2pt</PaddingRight>
-                            <PaddingTop>2pt</PaddingTop>
-                            <PaddingBottom>2pt</PaddingBottom>
-                          </Style>
-                        </Textbox>
-                      </CellContents>
-                    </TablixCell>
-                    <TablixCell>
-                      <CellContents>
-                        <Textbox Name="Textbox13">
-                          <CanGrow>true</CanGrow>
-                          <KeepTogether>true</KeepTogether>
-                          <Paragraphs>
-                            <Paragraph>
-                              <TextRuns>
-                                <TextRun>
-                                  <Value>Available Qty</Value>
-                                  <Style>
-                                    <FontFamily>Arial</FontFamily>
-                                    <FontWeight>Bold</FontWeight>
-                                    <TextDecoration>Underline</TextDecoration>
-                                  </Style>
-                                </TextRun>
-                              </TextRuns>
-                              <Style />
-                            </Paragraph>
-                          </Paragraphs>
-                          <rd:DefaultName>Textbox13</rd:DefaultName>
-                          <Style>
-                            <Border>
-                              <Color>LightGrey</Color>
-                              <Style>None</Style>
-                            </Border>
-                            <PaddingLeft>2pt</PaddingLeft>
-                            <PaddingRight>2pt</PaddingRight>
-                            <PaddingTop>2pt</PaddingTop>
-                            <PaddingBottom>2pt</PaddingBottom>
-                          </Style>
-                        </Textbox>
-                      </CellContents>
-                    </TablixCell>
-                    <TablixCell>
-                      <CellContents>
-                        <Textbox Name="Textbox15">
-                          <CanGrow>true</CanGrow>
-                          <KeepTogether>true</KeepTogether>
-                          <Paragraphs>
-                            <Paragraph>
-                              <TextRuns>
-                                <TextRun>
-                                  <Value>Order Quote</Value>
-                                  <Style>
-                                    <FontFamily>Arial</FontFamily>
-                                    <FontWeight>Bold</FontWeight>
-                                    <TextDecoration>Underline</TextDecoration>
-                                  </Style>
-                                </TextRun>
-                              </TextRuns>
-                              <Style />
-                            </Paragraph>
-                          </Paragraphs>
-                          <rd:DefaultName>Textbox15</rd:DefaultName>
-                          <Style>
-                            <Border>
-                              <Color>LightGrey</Color>
-                              <Style>None</Style>
-                            </Border>
-                            <PaddingLeft>2pt</PaddingLeft>
-                            <PaddingRight>2pt</PaddingRight>
-                            <PaddingTop>2pt</PaddingTop>
-                            <PaddingBottom>2pt</PaddingBottom>
-                          </Style>
-                        </Textbox>
-                      </CellContents>
-                    </TablixCell>
-                    <TablixCell>
-                      <CellContents>
-                        <Textbox Name="Textbox17">
-                          <CanGrow>true</CanGrow>
-                          <KeepTogether>true</KeepTogether>
-                          <Paragraphs>
-                            <Paragraph>
-                              <TextRuns>
-                                <TextRun>
-                                  <Value>Picked</Value>
-                                  <Style>
-                                    <FontFamily>Arial</FontFamily>
-                                    <FontWeight>Bold</FontWeight>
-                                    <TextDecoration>Underline</TextDecoration>
-                                  </Style>
-                                </TextRun>
-                              </TextRuns>
-                              <Style />
-                            </Paragraph>
-                          </Paragraphs>
-                          <rd:DefaultName>Textbox17</rd:DefaultName>
-                          <Style>
-                            <Border>
-                              <Color>LightGrey</Color>
-                              <Style>None</Style>
-                            </Border>
+                            <BottomBorder>
+                              <Style>Solid</Style>
+                            </BottomBorder>
+                            <FontFamily />
                             <PaddingLeft>2pt</PaddingLeft>
                             <PaddingRight>2pt</PaddingRight>
                             <PaddingTop>2pt</PaddingTop>
@@ -427,32 +331,37 @@ ORDER BY t.CustomerNo, t.OrderNo, t.TitleNo</CommandText>
                   </TablixCells>
                 </TablixRow>
                 <TablixRow>
-                  <Height>0.25in</Height>
+                  <Height>0.21in</Height>
                   <TablixCells>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="TitleNo">
+                        <Textbox Name="TitleNumber">
                           <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Fields!TitleNo.Value</Value>
+                                  <Value>=Fields!TitleNumber.Value</Value>
                                   <Style>
-                                    <FontFamily>Arial</FontFamily>
+                                    <FontFamily />
+                                    <FontSize>8pt</FontSize>
+                                    <Color>#333333</Color>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
                               <Style />
                             </Paragraph>
                           </Paragraphs>
-                          <rd:DefaultName>TitleNo</rd:DefaultName>
+                          <rd:DefaultName>TitleNumber</rd:DefaultName>
                           <Style>
                             <Border>
                               <Color>LightGrey</Color>
-                              <Style>None</Style>
                             </Border>
+                            <BottomBorder>
+                              <Style>Solid</Style>
+                            </BottomBorder>
+                            <FontFamily />
                             <PaddingLeft>2pt</PaddingLeft>
                             <PaddingRight>2pt</PaddingRight>
                             <PaddingTop>2pt</PaddingTop>
@@ -472,7 +381,9 @@ ORDER BY t.CustomerNo, t.OrderNo, t.TitleNo</CommandText>
                                 <TextRun>
                                   <Value>=Fields!Author.Value</Value>
                                   <Style>
-                                    <FontFamily>Arial</FontFamily>
+                                    <FontFamily />
+                                    <FontSize>8pt</FontSize>
+                                    <Color>#333333</Color>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
@@ -483,8 +394,11 @@ ORDER BY t.CustomerNo, t.OrderNo, t.TitleNo</CommandText>
                           <Style>
                             <Border>
                               <Color>LightGrey</Color>
-                              <Style>None</Style>
                             </Border>
+                            <BottomBorder>
+                              <Style>Solid</Style>
+                            </BottomBorder>
+                            <FontFamily />
                             <PaddingLeft>2pt</PaddingLeft>
                             <PaddingRight>2pt</PaddingRight>
                             <PaddingTop>2pt</PaddingTop>
@@ -504,7 +418,9 @@ ORDER BY t.CustomerNo, t.OrderNo, t.TitleNo</CommandText>
                                 <TextRun>
                                   <Value>=Fields!Title.Value</Value>
                                   <Style>
-                                    <FontFamily>Arial</FontFamily>
+                                    <FontFamily />
+                                    <FontSize>8pt</FontSize>
+                                    <Color>#333333</Color>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
@@ -515,8 +431,11 @@ ORDER BY t.CustomerNo, t.OrderNo, t.TitleNo</CommandText>
                           <Style>
                             <Border>
                               <Color>LightGrey</Color>
-                              <Style>None</Style>
                             </Border>
+                            <BottomBorder>
+                              <Style>Solid</Style>
+                            </BottomBorder>
+                            <FontFamily />
                             <PaddingLeft>2pt</PaddingLeft>
                             <PaddingRight>2pt</PaddingRight>
                             <PaddingTop>2pt</PaddingTop>
@@ -527,82 +446,18 @@ ORDER BY t.CustomerNo, t.OrderNo, t.TitleNo</CommandText>
                     </TablixCell>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="CustomerNo">
+                        <Textbox Name="SeasonCode">
                           <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Fields!CustomerNo.Value</Value>
+                                  <Value>=Fields!SeasonCode.Value</Value>
                                   <Style>
-                                    <FontFamily>Arial</FontFamily>
-                                  </Style>
-                                </TextRun>
-                              </TextRuns>
-                              <Style />
-                            </Paragraph>
-                          </Paragraphs>
-                          <rd:DefaultName>CustomerNo</rd:DefaultName>
-                          <Style>
-                            <Border>
-                              <Color>LightGrey</Color>
-                              <Style>None</Style>
-                            </Border>
-                            <PaddingLeft>2pt</PaddingLeft>
-                            <PaddingRight>2pt</PaddingRight>
-                            <PaddingTop>2pt</PaddingTop>
-                            <PaddingBottom>2pt</PaddingBottom>
-                          </Style>
-                        </Textbox>
-                      </CellContents>
-                    </TablixCell>
-                    <TablixCell>
-                      <CellContents>
-                        <Textbox Name="OrderNo">
-                          <CanGrow>true</CanGrow>
-                          <KeepTogether>true</KeepTogether>
-                          <Paragraphs>
-                            <Paragraph>
-                              <TextRuns>
-                                <TextRun>
-                                  <Value>=Fields!OrderNo.Value</Value>
-                                  <Style>
-                                    <FontFamily>Arial</FontFamily>
-                                  </Style>
-                                </TextRun>
-                              </TextRuns>
-                              <Style>
-                                <TextAlign>Left</TextAlign>
-                              </Style>
-                            </Paragraph>
-                          </Paragraphs>
-                          <rd:DefaultName>OrderNo</rd:DefaultName>
-                          <Style>
-                            <Border>
-                              <Color>LightGrey</Color>
-                              <Style>None</Style>
-                            </Border>
-                            <PaddingLeft>2pt</PaddingLeft>
-                            <PaddingRight>2pt</PaddingRight>
-                            <PaddingTop>2pt</PaddingTop>
-                            <PaddingBottom>2pt</PaddingBottom>
-                          </Style>
-                        </Textbox>
-                      </CellContents>
-                    </TablixCell>
-                    <TablixCell>
-                      <CellContents>
-                        <Textbox Name="RequestedQty">
-                          <CanGrow>true</CanGrow>
-                          <KeepTogether>true</KeepTogether>
-                          <Paragraphs>
-                            <Paragraph>
-                              <TextRuns>
-                                <TextRun>
-                                  <Value>=Fields!RequestedQty.Value</Value>
-                                  <Style>
-                                    <FontFamily>Arial</FontFamily>
+                                    <FontFamily />
+                                    <FontSize>8pt</FontSize>
+                                    <Color>#333333</Color>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
@@ -611,12 +466,15 @@ ORDER BY t.CustomerNo, t.OrderNo, t.TitleNo</CommandText>
                               </Style>
                             </Paragraph>
                           </Paragraphs>
-                          <rd:DefaultName>RequestedQty</rd:DefaultName>
+                          <rd:DefaultName>SeasonCode</rd:DefaultName>
                           <Style>
                             <Border>
                               <Color>LightGrey</Color>
-                              <Style>None</Style>
                             </Border>
+                            <BottomBorder>
+                              <Style>Solid</Style>
+                            </BottomBorder>
+                            <FontFamily />
                             <PaddingLeft>2pt</PaddingLeft>
                             <PaddingRight>2pt</PaddingRight>
                             <PaddingTop>2pt</PaddingTop>
@@ -627,30 +485,35 @@ ORDER BY t.CustomerNo, t.OrderNo, t.TitleNo</CommandText>
                     </TablixCell>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="AvailableQty">
+                        <Textbox Name="Available">
                           <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Fields!AvailableQty.Value</Value>
+                                  <Value>=Fields!Available.Value</Value>
                                   <Style>
-                                    <FontFamily>Arial</FontFamily>
+                                    <FontFamily />
+                                    <FontSize>8pt</FontSize>
+                                    <Color>#333333</Color>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
                               <Style>
-                                <TextAlign>Center</TextAlign>
+                                <TextAlign>Right</TextAlign>
                               </Style>
                             </Paragraph>
                           </Paragraphs>
-                          <rd:DefaultName>AvailableQty</rd:DefaultName>
+                          <rd:DefaultName>Available</rd:DefaultName>
                           <Style>
                             <Border>
                               <Color>LightGrey</Color>
-                              <Style>None</Style>
                             </Border>
+                            <BottomBorder>
+                              <Style>Solid</Style>
+                            </BottomBorder>
+                            <FontFamily />
                             <PaddingLeft>2pt</PaddingLeft>
                             <PaddingRight>2pt</PaddingRight>
                             <PaddingTop>2pt</PaddingTop>
@@ -661,60 +524,35 @@ ORDER BY t.CustomerNo, t.OrderNo, t.TitleNo</CommandText>
                     </TablixCell>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="Order_Quote">
+                        <Textbox Name="BackOrder">
                           <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Fields!Order_Quote.Value</Value>
+                                  <Value>=Fields!BackOrder.Value</Value>
                                   <Style>
-                                    <FontFamily>Arial</FontFamily>
+                                    <FontFamily />
+                                    <FontSize>8pt</FontSize>
+                                    <Color>#333333</Color>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
-                              <Style />
+                              <Style>
+                                <TextAlign>Right</TextAlign>
+                              </Style>
                             </Paragraph>
                           </Paragraphs>
-                          <rd:DefaultName>Order_Quote</rd:DefaultName>
+                          <rd:DefaultName>BackOrder</rd:DefaultName>
                           <Style>
                             <Border>
                               <Color>LightGrey</Color>
-                              <Style>None</Style>
                             </Border>
-                            <PaddingLeft>2pt</PaddingLeft>
-                            <PaddingRight>2pt</PaddingRight>
-                            <PaddingTop>2pt</PaddingTop>
-                            <PaddingBottom>2pt</PaddingBottom>
-                          </Style>
-                        </Textbox>
-                      </CellContents>
-                    </TablixCell>
-                    <TablixCell>
-                      <CellContents>
-                        <Textbox Name="Picked">
-                          <CanGrow>true</CanGrow>
-                          <KeepTogether>true</KeepTogether>
-                          <Paragraphs>
-                            <Paragraph>
-                              <TextRuns>
-                                <TextRun>
-                                  <Value>=Fields!Picked.Value</Value>
-                                  <Style>
-                                    <FontFamily>Arial</FontFamily>
-                                  </Style>
-                                </TextRun>
-                              </TextRuns>
-                              <Style />
-                            </Paragraph>
-                          </Paragraphs>
-                          <rd:DefaultName>Picked</rd:DefaultName>
-                          <Style>
-                            <Border>
-                              <Color>LightGrey</Color>
-                              <Style>None</Style>
-                            </Border>
+                            <BottomBorder>
+                              <Style>Solid</Style>
+                            </BottomBorder>
+                            <FontFamily />
                             <PaddingLeft>2pt</PaddingLeft>
                             <PaddingRight>2pt</PaddingRight>
                             <PaddingTop>2pt</PaddingTop>
@@ -725,13 +563,161 @@ ORDER BY t.CustomerNo, t.OrderNo, t.TitleNo</CommandText>
                     </TablixCell>
                   </TablixCells>
                 </TablixRow>
+                <TablixRow>
+                  <Height>0.25in</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox11">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value />
+                                  <Style>
+                                    <FontFamily />
+                                    <Color>#333333</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox11</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>LightGrey</Color>
+                            </Border>
+                            <BottomBorder>
+                              <Style>Solid</Style>
+                            </BottomBorder>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox12">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value />
+                                  <Style>
+                                    <FontFamily />
+                                    <Color>#333333</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox12</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>LightGrey</Color>
+                            </Border>
+                            <BottomBorder>
+                              <Style>Solid</Style>
+                            </BottomBorder>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox13">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value />
+                                  <Style>
+                                    <FontFamily />
+                                    <Color>#333333</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox13</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>LightGrey</Color>
+                            </Border>
+                            <BottomBorder>
+                              <Style>Solid</Style>
+                            </BottomBorder>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox17">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>="Total Items: " + FormatNumber(Count(Fields!TitleNumber.Value), 0).ToString()</Value>
+                                  <Style>
+                                    <FontFamily />
+                                    <FontSize>8pt</FontSize>
+                                    <Color>#333333</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Right</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox17</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>LightGrey</Color>
+                            </Border>
+                            <BottomBorder>
+                              <Style>Solid</Style>
+                            </BottomBorder>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                        <ColSpan>3</ColSpan>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell />
+                    <TablixCell />
+                  </TablixCells>
+                </TablixRow>
               </TablixRows>
             </TablixBody>
             <TablixColumnHierarchy>
               <TablixMembers>
-                <TablixMember />
-                <TablixMember />
-                <TablixMember />
                 <TablixMember />
                 <TablixMember />
                 <TablixMember />
@@ -745,101 +731,103 @@ ORDER BY t.CustomerNo, t.OrderNo, t.TitleNo</CommandText>
                 <TablixMember>
                   <KeepWithGroup>After</KeepWithGroup>
                   <RepeatOnNewPage>true</RepeatOnNewPage>
+                  <KeepTogether>true</KeepTogether>
                 </TablixMember>
                 <TablixMember>
-                  <Group Name="Details" />
+                  <Group Name="table1_Details_Group">
+                    <DataElementName>Detail</DataElementName>
+                  </Group>
+                  <TablixMembers>
+                    <TablixMember />
+                  </TablixMembers>
+                  <DataElementName>Detail_Collection</DataElementName>
+                  <DataElementOutput>Output</DataElementOutput>
+                  <KeepTogether>true</KeepTogether>
+                </TablixMember>
+                <TablixMember>
+                  <KeepWithGroup>Before</KeepWithGroup>
                 </TablixMember>
               </TablixMembers>
             </TablixRowHierarchy>
-            <NoRowsMessage>There is no current information for this report!</NoRowsMessage>
-            <DataSetName>BTSB_Dataset_NonTXLogo</DataSetName>
+            <DataSetName>DataSet1</DataSetName>
             <Top>0.06944in</Top>
-            <Left>0.38417in</Left>
-            <Height>0.5in</Height>
-            <Width>10.375in</Width>
-            <Style>
-              <Border>
-                <Style>None</Style>
-              </Border>
-            </Style>
+            <Left>0.09896in</Left>
+            <Height>0.68in</Height>
+            <Width>8.05208in</Width>
+            <Style />
           </Tablix>
         </ReportItems>
-        <Height>0.64583in</Height>
+        <Height>0.83042in</Height>
         <Style />
       </Body>
-      <Width>11in</Width>
+      <Width>8.5in</Width>
       <Page>
         <PageHeader>
-          <Height>0.69792in</Height>
+          <Height>0.56667in</Height>
           <PrintOnFirstPage>true</PrintOnFirstPage>
           <PrintOnLastPage>true</PrintOnLastPage>
           <ReportItems>
-            <Textbox Name="Textbox19">
+            <Textbox Name="textbox1">
               <CanGrow>true</CanGrow>
               <KeepTogether>true</KeepTogether>
               <Paragraphs>
                 <Paragraph>
                   <TextRuns>
                     <TextRun>
-                      <Value>Non-TX with logo</Value>
+                      <Value>Titles Not Cataloged</Value>
                       <Style>
-                        <FontFamily>Arial</FontFamily>
-                        <FontSize>12pt</FontSize>
+                        <FontFamily>Segoe UI Light</FontFamily>
+                        <FontSize>18pt</FontSize>
                         <FontWeight>Bold</FontWeight>
                       </Style>
                     </TextRun>
                   </TextRuns>
-                  <Style />
+                  <Style>
+                    <TextAlign>Center</TextAlign>
+                  </Style>
                 </Paragraph>
               </Paragraphs>
-              <rd:DefaultName>Textbox19</rd:DefaultName>
-              <Top>0.35292in</Top>
-              <Left>4.85292in</Left>
-              <Height>0.25in</Height>
-              <Width>2.23958in</Width>
+              <rd:DefaultName>textbox1</rd:DefaultName>
+              <Left>0.09896in</Left>
+              <Height>0.37222in</Height>
+              <Width>8.05208in</Width>
               <Style>
-                <Border>
-                  <Style>None</Style>
-                </Border>
                 <PaddingLeft>2pt</PaddingLeft>
                 <PaddingRight>2pt</PaddingRight>
                 <PaddingTop>2pt</PaddingTop>
                 <PaddingBottom>2pt</PaddingBottom>
               </Style>
             </Textbox>
-            <Textbox Name="Textbox20">
+            <Textbox Name="Textbox15">
               <CanGrow>true</CanGrow>
               <KeepTogether>true</KeepTogether>
               <Paragraphs>
                 <Paragraph>
                   <TextRuns>
                     <TextRun>
-                      <Value>=Globals!ExecutionTime</Value>
+                      <Value>="Print Date: " + Today()</Value>
                       <Style>
-                        <FontFamily>Arial</FontFamily>
+                        <FontFamily>arial</FontFamily>
+                        <FontSize>8pt</FontSize>
                         <Format>M/d/yyyy</Format>
                       </Style>
                     </TextRun>
                   </TextRuns>
                   <Style>
-                    <TextAlign>Left</TextAlign>
+                    <TextAlign>Center</TextAlign>
                   </Style>
                 </Paragraph>
               </Paragraphs>
-              <rd:DefaultName>Textbox20</rd:DefaultName>
-              <Top>0.35292in</Top>
-              <Left>0.38417in</Left>
-              <Height>0.25in</Height>
-              <Width>1in</Width>
+              <rd:DefaultName>Textbox15</rd:DefaultName>
+              <Top>0.4in</Top>
+              <Left>0.09896in</Left>
+              <Height>0.16667in</Height>
+              <Width>8.05208in</Width>
               <ZIndex>1</ZIndex>
               <Style>
                 <Border>
                   <Style>None</Style>
                 </Border>
-                <PaddingLeft>2pt</PaddingLeft>
-                <PaddingRight>2pt</PaddingRight>
-                <PaddingTop>2pt</PaddingTop>
-                <PaddingBottom>2pt</PaddingBottom>
               </Style>
             </Textbox>
           </ReportItems>
@@ -850,31 +838,34 @@ ORDER BY t.CustomerNo, t.OrderNo, t.TitleNo</CommandText>
           </Style>
         </PageHeader>
         <PageFooter>
-          <Height>0.48958in</Height>
+          <Height>0.3125in</Height>
           <PrintOnFirstPage>true</PrintOnFirstPage>
           <PrintOnLastPage>true</PrintOnLastPage>
           <ReportItems>
-            <Textbox Name="Textbox21">
+            <Textbox Name="Textbox1">
               <CanGrow>true</CanGrow>
               <KeepTogether>true</KeepTogether>
               <Paragraphs>
                 <Paragraph>
                   <TextRuns>
                     <TextRun>
-                      <Value>="Page " &amp; Globals!PageNumber &amp; " of " &amp; Globals!OverallTotalPages</Value>
+                      <Value>="Page " + Globals!PageNumber.ToString()</Value>
                       <Style>
-                        <FontFamily>Arial</FontFamily>
+                        <FontFamily>arial</FontFamily>
+                        <FontSize>9pt</FontSize>
                       </Style>
                     </TextRun>
                   </TextRuns>
-                  <Style />
+                  <Style>
+                    <TextAlign>Center</TextAlign>
+                  </Style>
                 </Paragraph>
               </Paragraphs>
-              <rd:DefaultName>Textbox21</rd:DefaultName>
-              <Top>0.155in</Top>
-              <Left>9.75917in</Left>
-              <Height>0.25in</Height>
-              <Width>1in</Width>
+              <rd:DefaultName>Textbox1</rd:DefaultName>
+              <Top>0.05556in</Top>
+              <Left>0.09896in</Left>
+              <Height>0.2in</Height>
+              <Width>8.05208in</Width>
               <Style>
                 <Border>
                   <Style>None</Style>
@@ -892,9 +883,6 @@ ORDER BY t.CustomerNo, t.OrderNo, t.TitleNo</CommandText>
             </Border>
           </Style>
         </PageFooter>
-        <PageHeight>8.5in</PageHeight>
-        <PageWidth>11in</PageWidth>
-        <BottomMargin>0.25in</BottomMargin>
         <Style />
       </Page>
     </ReportSection>
@@ -905,6 +893,8 @@ ORDER BY t.CustomerNo, t.OrderNo, t.TitleNo</CommandText>
       <NumberOfRows>2</NumberOfRows>
     </GridLayoutDefinition>
   </ReportParametersLayout>
+  <Language>en-US</Language>
+  <ConsumeContainerWhitespace>true</ConsumeContainerWhitespace>
   <rd:ReportUnitType>Inch</rd:ReportUnitType>
-  <rd:ReportID>905bf7ed-7f51-44ff-95c8-643d452f6e17</rd:ReportID>
+  <rd:ReportID>3fb27746-5fa4-41e2-870e-05ff5c876347</rd:ReportID>
 </Report>

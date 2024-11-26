@@ -53,6 +53,7 @@
     <Report Include="Movement Report.rdl" />
     <Report Include="Production Book Block Elapsed Time.rdl" />
     <Report Include="Production Hold Items.rdl" />
+    <Report Include="Production Snapshot Kory.rdl" />
     <Report Include="Production Snapshot.rdl" />
     <Report Include="Ready Inventory Daily Summary.rdl" />
   </ItemGroup>

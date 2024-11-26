@@ -27,7 +27,7 @@ FROM            Orders.dbo.Titles AS t INNER JOIN
 WHERE        (t.TitleNo IN
                              (SELECT        TITLENO
                                FROM            SETX
-                               WHERE        (SETNO IN ('S55369')))) AND (a.StateOrProvince = 'TX')
+                               WHERE        (SETNO IN ('S47950')))) AND (a.StateOrProvince = 'TX')
 ORDER BY t.CustomerNo, t.OrderNo, t.TitleNo</CommandText>
       </Query>
       <Fields>
